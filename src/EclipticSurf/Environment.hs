@@ -15,6 +15,8 @@ data DeployEnv
 data Config = Config
   { httpPort :: !Word16
   , deployEnv :: !DeployEnv
+  , ephePath :: !String
+  , precalcPath :: !String
   } deriving stock (Show, Generic)
 
 -- there could be another @Env@ data type
@@ -31,6 +33,9 @@ parseConfig =
   Config
   <$> parsePort
   <*> parseDeployEnv
+  <*> parseEphePath
+  <*> parsePrecalcPath
+
 
 parsePort :: Parser Error Word16
 parsePort =
@@ -40,6 +45,16 @@ parseDeployEnv :: Parser Error DeployEnv
 parseDeployEnv =
   var env "DEPLOY_ENV" (help "Environment to run the server as")
 
+parseEphePath :: Parser Error String
+parseEphePath =
+  -- intentionally the same as required by SwissEphemeris
+  var str "SE_EPHE_PATH" (help "Path to ephemeris data")
+
+
+parsePrecalcPath :: Parser Error String
+parsePrecalcPath =
+  -- intentionally the same as required by SwissEphemeris
+  var str "EP4_PATH" (help "Path to precalculated ephemeris data")
 -------------------------------------------------------------------------------
 --- PARSER HELPERS
 -------------------------------------------------------------------------------

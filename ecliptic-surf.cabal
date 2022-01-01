@@ -46,6 +46,8 @@ library
       EclipticSurf.Server
       EclipticSurf.Types
       EclipticSurf.Views
+      EclipticSurf.Chart
+      EclipticSurf.Query
       EclipticSurf.Server.Pages
       EclipticSurf.Views.Home
       EclipticSurf.Views.Layout
