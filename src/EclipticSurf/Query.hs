@@ -8,7 +8,7 @@ import Almanac
 import Almanac.Optics
 import Almanac.Extras
 import Data.List.NonEmpty (fromList)
-import SwissEphemeris (Planet)
+import SwissEphemeris (Planet (Sun))
 import EclipticSurf.Types (AppM)
 import EclipticSurf.Import
 
@@ -23,7 +23,7 @@ currentTransits = do
       monthEndUT = UTCTime monthEnd 0
       q = mundane
             (Interval monthStartUT monthEndUT)
-            [QueryPlanetaryMundaneTransit $ easyTransitOptions (fromList majorAspects) (fromList defaultMundaneTransitPairs)]
+            [QueryPlanetaryMundaneTransit $ TransitOptions True (fromList majorAspects) (fromList relevantPairs)]
   exactEvents <- runExactQuery q
   let active = (summarize <$> exactEvents) ^.. traversed . _Just
       summarize evt =
@@ -31,3 +31,8 @@ currentTransits = do
             firstExact = evt ^? exactitudeMomentsL._head
         in (,) <$> transit <*> firstExact
   pure . map fst $ active
+
+relevantPairs :: [(Planet, Planet)]
+relevantPairs =
+  defaultMundaneTransitPairs
+  & filter ((/=) Sun . fst)

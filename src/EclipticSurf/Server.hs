@@ -22,6 +22,10 @@ import Graphics.Rendering.Chart.Backend.Diagrams (defaultEnv)
 import Control.Carrier.Reader (runReader)
 import EclipticSurf.Effects.Time (runTimeIO)
 import EclipticSurf.Effects.Almanac (runAlmanacDataIO)
+import System.Directory (makeAbsolute)
+import SwissEphemeris.Precalculated (setEphe4Path)
+import SwissEphemeris
+
 
 data Routes route = Routes
   { assets :: route :- "static" :> Raw
@@ -41,6 +45,13 @@ run = do
       " ♊"
     ]
   denv <- defaultEnv vectorAlignmentFns 800 600
+  absoluteEphePath <- makeAbsolute . ephePath $ config
+  absoluteEp4Path  <- makeAbsolute . precalcPath $ config
+  -- NOTE(luis) these shouldn't be necessary... and yet
+  -- they are??
+  setEphemeridesPath absoluteEphePath
+  setEphe4Path absoluteEp4Path
+
   let environ = Env{chartEnv = denv, serverPort = httpPort config}
   runServer environ
 
