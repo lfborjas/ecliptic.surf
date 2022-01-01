@@ -9,7 +9,7 @@ import Graphics.Rendering.Chart.Backend.Diagrams hiding (SVG)
 import Control.Monad
 import Data.Time
 import Data.Foldable
-import Diagrams.Backend.SVG (svgClass,  Options(SVGOptions), SVG(..), B )
+import Diagrams.Backend.SVG (Options(SVGOptions), SVG(..), B )
 import Diagrams hiding (render, aspect, Renderable)
 import qualified Graphics.Svg as Svg
 import Lucid (toHtmlRaw, Html)

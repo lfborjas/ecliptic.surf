@@ -51,6 +51,8 @@ library
       EclipticSurf.Server.Pages
       EclipticSurf.Views.Home
       EclipticSurf.Views.Layout
+      EclipticSurf.Effects.Almanac
+      EclipticSurf.Effects.Time
 
     build-depends:    
       base >= 4.13 && <= 4.17

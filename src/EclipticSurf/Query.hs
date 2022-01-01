@@ -9,11 +9,13 @@ import Almanac.Optics
 import Almanac.Extras
 import Data.List.NonEmpty (fromList)
 import SwissEphemeris (Planet)
+import EclipticSurf.Types (AppM)
+import EclipticSurf.Import
 
 
-currentTransits :: IO [Transit Planet]
+currentTransits :: AppM sig m => m [Transit Planet]
 currentTransits = do
-  (UTCTime today _) <- getCurrentTime
+  (UTCTime today _) <- now
   let (y,m,_) = toGregorian today
       monthStart = fromGregorian y m 1
       monthEnd = addGregorianMonthsClip 1 monthStart
@@ -22,7 +24,7 @@ currentTransits = do
       q = mundane
             (Interval monthStartUT monthEndUT)
             [QueryPlanetaryMundaneTransit $ easyTransitOptions (fromList majorAspects) (fromList defaultMundaneTransitPairs)]
-  exactEvents <- runQuery q >>= eventsWithExactitude
+  exactEvents <- runExactQuery q
   let active = (summarize <$> exactEvents) ^.. traversed . _Just
       summarize evt =
         let transit = evt ^? eventL._PlanetaryTransitInfo

@@ -20,6 +20,8 @@ import qualified EclipticSurf.Server.Pages as Pages
 import Graphics.Rendering.Chart.Backend (vectorAlignmentFns)
 import Graphics.Rendering.Chart.Backend.Diagrams (defaultEnv)
 import Control.Carrier.Reader (runReader)
+import EclipticSurf.Effects.Time (runTimeIO)
+import EclipticSurf.Effects.Almanac (runAlmanacDataIO)
 
 data Routes route = Routes
   { assets :: route :- "static" :> Raw
@@ -60,6 +62,8 @@ runServer config = withStdoutLogger $ \logger -> do
           handler
             & runError @ServerError
             & runReader cfg
+            & runTimeIO
+            & runAlmanacDataIO
             & runM
 
 
