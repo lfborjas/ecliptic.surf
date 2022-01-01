@@ -48,6 +48,7 @@ library
       EclipticSurf.Views
       EclipticSurf.Server.Pages
       EclipticSurf.Views.Home
+      EclipticSurf.Views.Layout
 
     build-depends:    
       base >= 4.13 && <= 4.17

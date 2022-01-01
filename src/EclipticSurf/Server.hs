@@ -27,7 +27,14 @@ data Routes route = Routes
 run :: IO ()
 run = do
   config <- getServerEnv
-  successMessage . T.pack $ "♊ Serving on port" <> (show . httpPort $ config)
+  successMessage . T.pack $ mconcat [
+      "♊ [",
+      show . deployEnv $ config,
+      "] ",
+      "Serving on port ",
+      show . httpPort $ config,
+      " ♊"
+    ]
   runServer config
 
 runServer :: Config -> IO ()

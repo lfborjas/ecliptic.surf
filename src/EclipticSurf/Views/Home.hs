@@ -6,11 +6,6 @@ module EclipticSurf.Views.Home where
 import Lucid
 
 page :: Html ()
-page = do
-  doctype_
-  html_ [lang_ "en"] $ do
-    head_ $ do
-      title_ "ecliptic.surf"
-    body_ $ do
-      main_ $ do
-        "Hello"
+page = 
+  main_ $ do
+    "Hello"
