@@ -25,9 +25,12 @@ common common-extensions
     default-extensions:
         DerivingStrategies
         DerivingVia
+        DeriveGeneric
+        DataKinds
         GeneralizedNewtypeDeriving
         NamedFieldPuns
         OverloadedStrings  
+        TypeOperators
     default-language: Haskell2010
 
 common common-ghc-options
@@ -38,6 +41,13 @@ library
     import: common-ghc-options
     exposed-modules: 
       EclipticSurf
+      EclipticSurf.Environment
+      EclipticSurf.Import
+      EclipticSurf.Server
+      EclipticSurf.Types
+      EclipticSurf.Views
+      EclipticSurf.Server.Pages
+      EclipticSurf.Views.Home
 
     build-depends:    
       base >= 4.13 && <= 4.17

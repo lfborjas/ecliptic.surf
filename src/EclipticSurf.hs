@@ -1,4 +1,5 @@
-module EclipticSurf where
+module EclipticSurf (
+  module EclipticSurf.Server
+) where
 
-run :: IO ()
-run = putStrLn "ecliptic.surf"
+import EclipticSurf.Server (run)
