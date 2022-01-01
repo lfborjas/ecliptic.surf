@@ -5,7 +5,7 @@ module EclipticSurf.Views.Home where
 
 import Lucid
 
-page :: Html ()
-page = 
+page :: Html () -> Html ()
+page chart = 
   main_ $ do
-    "Hello"
+    chart

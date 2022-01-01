@@ -5,6 +5,7 @@ import Data.Word (Word16)
 import GHC.Generics ( Generic )
 import Env
 import Text.Read (readMaybe)
+import Graphics.Rendering.Chart.Backend.Diagrams (DEnv)
 
 data DeployEnv
   = Test
@@ -19,6 +20,11 @@ data Config = Config
   , precalcPath :: !String
   } deriving stock (Show, Generic)
 
+
+data Env = Env
+  { chartEnv :: !(DEnv Double)
+  , serverPort :: !Word16 
+  } deriving stock (Generic)
 -- there could be another @Env@ data type
 -- if we need to distinguish between the env variables
 -- coming in and the "env" configuration used in the app
