@@ -11,6 +11,7 @@ in (super: {
   #servant = super.servant_0_18;
   #servant-server = super.servant-server_0_18;
   #fused-effects = super.fused-effects_1_1_0_0;
+  fused-effects  = dontCheck super.fused-effects;
   swiss-ephemeris = super.callPackage ./extra-pkgs/swiss-ephemeris.nix {};
   almanac = super.callPackage ./extra-pkgs/almanac.nix {};
   timezone-detect = dontCheck (super.callPackage ./extra-pkgs/timezone-detect.nix {}) ;

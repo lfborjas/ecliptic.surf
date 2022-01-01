@@ -41,16 +41,48 @@ library
 
     build-depends:    
       base >= 4.13 && <= 4.17
-      ,almanac
-      ,containers
-      ,swiss-ephemeris >= 1.4.2 && <2
-      ,time
-      ,lens
-      ,Chart
-      ,Chart-diagrams
-      ,colour
-      ,directory
-      ,optparse-applicative
+      , almanac
+      , containers
+      , swiss-ephemeris >= 1.4.2 && <2
+      , time
+      , lens
+      , Chart
+      , Chart-diagrams
+      , colour
+      , directory
+      , optparse-applicative
+      -- from freenatalchart.xyz 
+      , cmark
+      , diagrams
+      , diagrams-contrib
+      , diagrams-core
+      , diagrams-lib
+      , diagrams-svg
+      --, envy
+      , http-api-data
+      , http-types
+      , lucid
+      , servant
+      , servant-lucid
+      , servant-server
+      , svg-builder
+      , timezone-detect >=0.3.0.0
+      , validation-selective
+      , wai
+      , wai-enforce-https
+      , warp
+      -- from flora.pm
+      , bytestring
+      , colourista
+      , envparse
+      --, PyF -- alternative to interpolate 
+      --, raven-haskell -- client for sentry.io
+      , text
+      --, text-display -- user-facing output
+      , wai-logger
+      , wai-middleware-static 
+      -- from geocode.city
+      , fused-effects
 
     hs-source-dirs:   src
 
