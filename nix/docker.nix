@@ -2,7 +2,6 @@
 
 let
   bin = (pkgs.haskell.lib.justStaticExecutables (pkgs.haskell.lib.dontCheck pkgs.haskellPackages.ecliptic-surf));
-  migrations = ../migrations;
   config = ../config;
   static = ../static;
 in
@@ -30,7 +29,6 @@ pkgs.dockerTools.buildImage {
   # to the standard location as expected (perhaps erroneously) by timezone-detect:
   # https://github.com/lfborjas/timezone-detect/blob/6c3d7954431b63c07c1b0018a364897e42080e54/src/Data/Time/LocalTime/TimeZone/Detect.hs#L123
   extraCommands = ''
-    cp -rf ${migrations} migrations
     cp -rf ${config} config
     cp -rf ${static} static
     chmod -R 777 config
@@ -44,9 +42,8 @@ pkgs.dockerTools.buildImage {
     Env = [ 
       "DEPLOY_ENV=Production"
       "TIMEZONE_DATABASE_FILE=/config/timezone21.bin"
-      "SE_EPHE_PATH=/config"
-      "EPHE_DB_FILE=/config/precalculated_ephemeris.db"
-      "EP4_PATH=/config"
+      "SE_EPHE_PATH=/config/ephe"
+      "EP4_PATH=/config/ephe"
     ];
   };
 }
