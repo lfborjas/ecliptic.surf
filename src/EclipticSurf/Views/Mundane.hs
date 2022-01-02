@@ -11,11 +11,20 @@ import Almanac
 import Data.List (intersperse)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
-page :: [(Transit Planet, [UTCTime])]-> Html () -> Html ()
-page transits chart = do
+page 
+  :: UTCTime 
+  -> UTCTime
+  -> [Planet]
+  -> [Planet]
+  -> [AspectName]
+  -> [(Transit Planet, [UTCTime])]-> Html () -> Html ()
+page start end _transitingC _transitedC _chosenAspects transits chart = do
   main_ $ do
     p_ [class_  "mt-2"] $ do
-      "Mundane transits"
+      "Mundane transits between "
+      toHtml . iso8601Show $ start
+      " and "
+      toHtml . iso8601Show $ end
     chart
     ul_ $ do
       forM_ transits $ \(Transit{transiting, transited, aspect}, exacts) -> do

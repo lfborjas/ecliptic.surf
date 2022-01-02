@@ -89,7 +89,7 @@ mundaneHandler start end transiting transited chosenAspects= do
     transits <- mundaneTransits startUT endUT transiting' transited' chosenAspects'
     let chart = Chart.surfChart $ transits ^.. traversed . _1
         rendered = Chart.renderEZ chartEnv chart
-    renderView $ Mundane.page transits rendered
+    renderView $ Mundane.page startUT endUT transiting' transited' chosenAspects' transits rendered
 
 
 renderView :: AppM sig m => Html () -> m (Html ())
