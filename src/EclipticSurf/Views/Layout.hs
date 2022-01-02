@@ -24,6 +24,9 @@ layout page = do
         header_ [class_ "navbar mt-2"] $ do
           section_ [class_ "navbar-section"] $ do
             a_ [href_ "/", class_ "navbar-brand mr-2"] "🌌 ecliptic.surf 🏄"
+          section_ [class_ "navbar-center"] mempty
+          section_ [class_ "navbar-section"] $ do
+            a_ [href_ "/explore-mundane", class_ "btn btn-link"] "Mundane"
         page
     footer
     

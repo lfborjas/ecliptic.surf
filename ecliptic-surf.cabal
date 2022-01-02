@@ -50,6 +50,7 @@ library
       EclipticSurf.Query
       EclipticSurf.Server.Pages
       EclipticSurf.Views.Home
+      EclipticSurf.Views.Mundane
       EclipticSurf.Views.Layout
       EclipticSurf.Effects.Almanac
       EclipticSurf.Effects.Time
