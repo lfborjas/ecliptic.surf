@@ -30,7 +30,7 @@ homeHandler :: AppM sig m => m (Html ())
 homeHandler = do
   Env{chartEnv} <- ask
   transits <- currentTransits
-  let chart = Chart.surfChart "This month's transits" transits
+  let chart = Chart.surfChart "Transits active today" transits
       rendered = Chart.renderEZ chartEnv chart 
   pure . Views.render . Home.page $ rendered
   
