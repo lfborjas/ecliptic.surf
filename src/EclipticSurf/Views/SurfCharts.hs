@@ -11,8 +11,8 @@ import Almanac
 import Data.List (intersperse)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
-mundanePage 
-  :: UTCTime 
+mundanePage
+  :: UTCTime
   -> UTCTime
   -> [Planet]
   -> [Planet]
@@ -20,26 +20,30 @@ mundanePage
   -> [(Transit Planet, [UTCTime])]-> Html () -> Html ()
 mundanePage start end _transitingC _transitedC _chosenAspects transits chart = do
   main_ $ do
+    h2_ "Mundane Transits"
     p_ [class_  "mt-2"] $ do
-      "Mundane transits between "
+      "Between "
       toHtml . iso8601Show $ start
       " and "
       toHtml . iso8601Show $ end
     chart
     displayTransits transits
-    
+
 natalPage
-  :: UTCTime 
+  :: UTCTime
   -> UTCTime
   -> UTCTime
   -> [Planet]
   -> [Planet]
   -> [AspectName]
-  -> [(Transit Planet, [UTCTime])]-> Html () -> Html ()
-natalPage dob start end _transitingC _transitedC _chosenAspects transits chart = do
+  -> [(Transit Planet, [UTCTime])] -> Html ()
+  -> [(Transit Planet, UTCTime, [UTCTime])] -> Html ()
+  -> Html ()
+natalPage dob start end _transitingC _transitedC _chosenAspects transits chart activeTransits activeChart = do
   main_ $ do
+    h2_ "Natal Transits"
     p_ [class_  "mt-2"] $ do
-      "Mundane transits between "
+      "Between "
       toHtml . iso8601Show $ start
       " and "
       toHtml . iso8601Show $ end
@@ -47,7 +51,11 @@ natalPage dob start end _transitingC _transitedC _chosenAspects transits chart =
       toHtml . iso8601Show $ dob
     chart
     displayTransits transits
- 
+    unless (null activeTransits) $ do
+      h2_ "Natal transits active today"
+      activeChart
+      displayTransits $ map (\(t,_fe,e) -> (t,e)) activeTransits
+
 displayTransits :: [(Transit Planet, [UTCTime])] -> Html ()
 displayTransits transits = do
   ul_ $ do
@@ -80,7 +88,6 @@ natalForm err = do
   p_ "Start and end dates are UTC. The Moon is not included due to its high speed."
   form_ [action_ "/natal", method_ "get"] $ do
     errorDisplay err
-    startEnd
     dateInput (Just "Date of Birth") "dob"
     div_ [class_ "form-group"] $ do
       label_ [for_ "offset"] "Timezone"
@@ -94,7 +101,20 @@ natalForm err = do
         , placeholder_ "+00:00"
         , pattern_ "^[+-][0-9]{2}:[0-9]{2}$"
         ]
+    startEnd
     multiSelects
+    div_ [class_ "form-group"] $ do
+      label_ [class_ "form-switch", for_ "includeActiveToday"] $ do 
+        input_
+          [ class_ "form-input"
+          , type_ "checkbox"
+          , id_ "includeActiveToday"
+          , name_ "includeActiveToday"
+          , checked_
+          , value_ "true"
+          ]
+        i_ [class_ "form-icon"] ""
+        "Also show transits active today"
     submit
 
 
@@ -112,7 +132,7 @@ startEnd = do
 dateInput :: Maybe Text -> Text -> Html ()
 dateInput label inputName = do
   div_ [class_ "form-group"] $ do
-    label_ [for_ inputName] $ 
+    label_ [for_ inputName] $
       maybe (toHtml . toTitle $ inputName) toHtml label
     input_
       [ class_  "form-input"

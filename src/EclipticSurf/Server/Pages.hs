@@ -9,9 +9,9 @@ import Lucid
 import Servant.HTML.Lucid
 import Servant
 import Servant.Server.Generic
-import EclipticSurf.Types 
+import EclipticSurf.Types
 import EclipticSurf.Environment
-import EclipticSurf.Query (currentTransits, mundaneTransits, sansMoon, natalTransits)
+import EclipticSurf.Query (currentTransits, mundaneTransits, sansMoon, natalTransits, currentNatalTransits)
 import Control.Lens
 import Data.Time
 import SwissEphemeris (Planet(..))
@@ -50,6 +50,7 @@ data Routes' mode = Routes'
       :> QueryParams "transiting" Planet
       :> QueryParams "transited" Planet
       :> QueryParams "aspects" AspectName
+      :> QueryFlag "includeActiveToday"
       :> Get '[HTML] (Html ())
   } deriving stock (Generic)
 
@@ -115,13 +116,14 @@ natalHandler
   -> [Planet]
   -> [Planet]
   -> [AspectName]
+  -> Bool
   -> m (Html ())
-natalHandler dob tz start end transiting transited chosenAspects= do
+natalHandler dob tz start end transiting transited chosenAspects includeActiveToday = do
   let errors = catMaybes [
                   either (const $ Just "Invalid start date") (const Nothing) start,
                   either (const $ Just "Invalid end date") (const Nothing) end,
                   either (const $ Just "Invalid birth date") (const Nothing) dob,
-                  either (const $ Just "Invalid timezone offset") (const Nothing) tz 
+                  either (const $ Just "Invalid timezone offset") (const Nothing) tz
                 ]
   if not . null $ errors then
     renderView . SurfCharts.natalForm . Just $ intercalate ", " errors
@@ -131,17 +133,23 @@ natalHandler dob tz start end transiting transited chosenAspects= do
     let today = utcToLocalTime utc today'
         startUT = localTimeToUTC utc (fromRight today start)
         endUT   = localTimeToUTC utc (fromRight today end)
-        dobUT   = 
-          zonedTimeToUTC 
-            (ZonedTime (fromRight today dob) 
+        dobUT   =
+          zonedTimeToUTC
+            (ZonedTime (fromRight today dob)
             (getTimeZoneOffset (fromRight (TimeZoneOffset utc) tz)))
         transiting' = defaultColl sansMoon transiting
         transited'  = defaultColl sansMoon transited
         chosenAspects' = defaultColl (map aspectName majorAspects) chosenAspects
     transits <- natalTransits dobUT startUT endUT transiting' transited' chosenAspects'
+    activeTransits <- if not includeActiveToday then pure mempty else currentNatalTransits dobUT
     let chart = Chart.surfChart $ transits ^.. traversed . _1
         rendered = Chart.renderEZ chartEnv chart
-    renderView $ SurfCharts.natalPage dobUT startUT endUT transiting' transited' chosenAspects' transits rendered
+        renderedActive =
+          if not . null $ activeTransits then
+            Chart.renderEZ chartEnv . Chart.surfChart $ activeTransits ^.. traversed . _1
+          else
+            mempty
+    renderView $ SurfCharts.natalPage dobUT startUT endUT transiting' transited' chosenAspects' transits rendered activeTransits renderedActive 
 
 -------------------------------------------------------------------------------
 -- HELPERS

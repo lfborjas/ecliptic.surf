@@ -91,6 +91,32 @@ currentTransits = do
             & filter (happening todayTT . view _1)
       pure activeToday
 
+currentNatalTransits :: AppM sig m => UTCTime -> m [(Transit Planet, UTCTime, [UTCTime])]
+currentNatalTransits dob = do
+  rn@(UTCTime today _) <- now
+  todayTT' <- toJulianTT rn
+  case todayTT' of
+    Nothing -> error "Invalid date"
+    Just todayTT -> do
+      let (y,m,_) = toGregorian today
+          monthStart = fromGregorian y m 1
+          monthEnd = addGregorianMonthsClip 1 monthStart
+          monthStartUT = UTCTime monthStart 0
+          monthEndUT = UTCTime monthEnd 0
+          q = natal
+                (Interval monthStartUT monthEndUT)
+                (ReferenceEvent dob zeroGeo)
+                [ QueryPlanetaryNatalTransit $ TransitOptions True (fromList relaxedAspects) (fromList relevantPairs),
+                  QueryLunarNatalTransit $ easyTransitOptions (fromList relaxedAspects) (fromList defaultPlanets) 
+                ]
+      exactEvents <- runExactQuery q
+      let active = (summarize <$> exactEvents) ^.. traversed . _Just
+          activeToday = 
+            active
+            & filter (happening todayTT . view _1)
+      pure activeToday
+
+
 summarize :: ExactEvent -> Maybe (Transit Planet, UTCTime, [UTCTime])
 summarize evt =
    let transit = evt ^? eventL._PlanetaryTransitInfo

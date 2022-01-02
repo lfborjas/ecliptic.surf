@@ -29,7 +29,7 @@ surfChart :: [Transit Planet] -> Renderable ()
 surfChart transits =
   toRenderable . execEC  $ do
     layout_y_axis . laxis_reverse .= True
-    forM_ transits $ \Transit{transitProgress, aspect, transiting, transited} ->
+    forM_ (filter (not . null . transitProgress) transits) $ \Transit{transitProgress, aspect, transiting, transited} ->
       plot (fillBetween (show transiting <> " " <> show aspect <> " " <> show transited)
         [(dayFromJulianDay jd, (o, 5.0)) | (jd,o) <- toList transitProgress])
 
