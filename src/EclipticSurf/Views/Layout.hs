@@ -27,6 +27,7 @@ layout page = do
           section_ [class_ "navbar-center"] mempty
           section_ [class_ "navbar-section"] $ do
             a_ [href_ "/explore-mundane", class_ "btn btn-link"] "Mundane"
+            a_ [href_ "/explore-natal", class_ "btn btn-link"] "Natal"
         page
     footer
     
