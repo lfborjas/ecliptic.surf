@@ -34,9 +34,9 @@ pkgs.dockerTools.buildImage {
   # location... but I'm running out of time so for now just copying to `/home`
   extraCommands = ''
     cp -rf ${config} config
+    cp -rf ${config}/ephe/ home
     cp -rf ${static} static
     chmod -R 777 config
-    cp -r /config/ephe/ home
     mkdir -p usr/share
     ln -sf ${pkgs.tzdata}/share/zoneinfo usr/share/zoneinfo
   '';
