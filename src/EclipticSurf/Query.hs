@@ -13,7 +13,7 @@ import EclipticSurf.Types (AppM)
 import EclipticSurf.Import
 
 
-currentTransits :: AppM sig m => m [Transit Planet]
+currentTransits :: AppM sig m => m [(Transit Planet, UTCTime, [UTCTime])]
 currentTransits = do
   rn@(UTCTime today _) <- now
   todayTT' <- toJulianTT rn
@@ -32,12 +32,13 @@ currentTransits = do
       let active = (summarize <$> exactEvents) ^.. traversed . _Just
           activeToday = 
             active
-            & filter (happening todayTT . fst)
+            & filter (happening todayTT . view _1)
           summarize evt =
             let transit = evt ^? eventL._PlanetaryTransitInfo
+                allExact = evt ^?  exactitudeMomentsL  
                 firstExact = evt ^? exactitudeMomentsL._head
-            in (,) <$> transit <*> firstExact
-      pure . map fst $ activeToday
+            in (,,) <$> transit <*> firstExact <*> allExact
+      pure activeToday
 
 happening :: JulianDayTT -> Transit Planet -> Bool
 happening today Transit{transitStarts, transitEnds} =

@@ -21,6 +21,9 @@ layout page = do
     header
     body_ $ do
       div_ [class_ "container grid-lg"] $ do
+        header_ [class_ "navbar mt-2"] $ do
+          section_ [class_ "navbar-section"] $ do
+            a_ [href_ "/", class_ "navbar-brand mr-2"] "🌌 ecliptic.surf 🏄"
         page
     footer
     

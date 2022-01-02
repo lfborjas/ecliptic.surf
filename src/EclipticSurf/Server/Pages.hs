@@ -13,6 +13,7 @@ import qualified EclipticSurf.Views as Views
 import qualified EclipticSurf.Chart as Chart
 import EclipticSurf.Environment
 import EclipticSurf.Query (currentTransits)
+import Control.Lens
 
 
 type Routes = ToServantApi Routes'
@@ -30,7 +31,7 @@ homeHandler :: AppM sig m => m (Html ())
 homeHandler = do
   Env{chartEnv} <- ask
   transits <- currentTransits
-  let chart = Chart.surfChart "Transits active today" transits
+  let chart = Chart.surfChart (transits ^.. traversed . _1)
       rendered = Chart.renderEZ chartEnv chart 
-  pure . Views.render . Home.page $ rendered
+  pure . Views.render . Home.page transits $ rendered
   

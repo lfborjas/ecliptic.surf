@@ -25,10 +25,9 @@ renderEZ :: DEnv Double -> Renderable a -> Html ()
 renderEZ = 
   render [Svg.makeAttribute "height" "not", Svg.makeAttribute "width" "not"] 600
 
-surfChart :: String -> [Transit Planet] -> Renderable ()
-surfChart title transits =
+surfChart :: [Transit Planet] -> Renderable ()
+surfChart transits =
   toRenderable . execEC  $ do
-    layout_title .= title
     layout_y_axis . laxis_reverse .= True
     forM_ transits $ \Transit{transitProgress, aspect, transiting, transited} ->
       plot (fillBetween (show transiting <> " " <> show aspect <> " " <> show transited)
