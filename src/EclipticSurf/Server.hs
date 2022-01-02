@@ -15,7 +15,7 @@ import EclipticSurf.Effects.Time (runTimeIO)
 import EclipticSurf.Environment
   ( Config (deployEnv, ephePath, httpPort, precalcPath),
     Env (..),
-    getServerEnv,
+    getServerEnv, DeployEnv (Development)
   )
 import qualified EclipticSurf.Server.Pages as Pages
 import EclipticSurf.Types (AppM)
@@ -40,6 +40,7 @@ import Servant.Server.Generic (AsServerT, genericServeT)
 import SwissEphemeris (setEphemeridesPath)
 import SwissEphemeris.Precalculated (setEphe4Path)
 import System.Directory (makeAbsolute)
+import Control.Monad (when)
 
 
 data Routes route = Routes
@@ -51,14 +52,15 @@ data Routes route = Routes
 run :: IO ()
 run = do
   config <- getServerEnv
-  successMessage . T.pack $ mconcat [
-      "♊ [",
-      show . deployEnv $ config,
-      "] ",
-      "Serving on port ",
-      show . httpPort $ config,
-      " ♊"
-    ]
+  when (deployEnv config == Development) $
+    successMessage . T.pack $ mconcat [
+        "♊ [",
+        show . deployEnv $ config,
+        "] ",
+        "Serving on port ",
+        show . httpPort $ config,
+        " ♊"
+      ]
   denv <- defaultEnv vectorAlignmentFns 800 600
   absoluteEphePath <- makeAbsolute . ephePath $ config
   absoluteEp4Path  <- makeAbsolute . precalcPath $ config
