@@ -35,8 +35,8 @@ pkgs.dockerTools.buildImage {
   extraCommands = ''
     cp -rf ${config} config
     cp -rf ${static} static
+    mkdir -p home/ephe
     chmod +w home
-    mkdir home/ephe
     cp -a ${config}/ephe/. home/ephe
     chmod -R 777 config
     mkdir -p usr/share
