@@ -27,7 +27,7 @@ currentTransits = do
           monthEndUT = UTCTime monthEnd 0
           q = mundane
                 (Interval monthStartUT monthEndUT)
-                [QueryPlanetaryMundaneTransit $ TransitOptions True (fromList majorAspects) (fromList relevantPairs)]
+                [QueryPlanetaryMundaneTransit $ TransitOptions True (fromList relaxedAspects) (fromList relevantPairs)]
       exactEvents <- runExactQuery q
       let active = (summarize <$> exactEvents) ^.. traversed . _Just
           activeToday = 
@@ -47,3 +47,8 @@ relevantPairs :: [(Planet, Planet)]
 relevantPairs =
   defaultMundaneTransitPairs
   & filter ((/=) Sun . fst)
+
+relaxedAspects :: [Aspect]
+relaxedAspects = 
+  majorAspects 
+  & map (\a -> a{orbApplying = 5, orbSeparating  = 5})
