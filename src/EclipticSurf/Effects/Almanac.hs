@@ -9,14 +9,18 @@
 
 module EclipticSurf.Effects.Almanac where
 
-import Control.Algebra
 import Almanac
-    ( eventsWithExactitude, runQuery, ExactEvent, Query )
-import Data.Kind ( Type )
-import Control.Monad.IO.Class ( MonadIO(..) )
+  ( ExactEvent,
+    Query,
+    eventsWithExactitude,
+    runQuery,
+  )
+import Control.Algebra ( Algebra(..), type (:+:)(..), Has, send )
+import Control.Monad.IO.Class (MonadIO (..))
+import Data.Kind (Type)
 import Data.Sequence (Seq)
-import SwissEphemeris 
-import Data.Time ( UTCTime )
+import Data.Time (UTCTime)
+import SwissEphemeris ( JulianDayTT, ToJulianDay(toJulianDay) )
 
 data AlmanacData (m :: Type -> Type) k where
   RunExactQuery :: Query -> AlmanacData m (Seq ExactEvent)

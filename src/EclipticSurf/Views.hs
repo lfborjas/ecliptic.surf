@@ -1,6 +1,6 @@
 module EclipticSurf.Views where
 
-import Lucid
+import Lucid ( Html )
 import EclipticSurf.Views.Layout (layout)
 
 -- NOTE(luis) keeping this separate as I may want to introduce

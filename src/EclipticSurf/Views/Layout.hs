@@ -21,11 +21,16 @@ layout page = do
     header
     body_ $ do
       div_ [class_ "container grid-lg"] $ do
+        header_ [class_ "navbar mt-2"] $ do
+          section_ [class_ "navbar-section"] $ do
+            a_ [href_ "/", class_ "navbar-brand mr-2"] "🌌 ecliptic.surf 🏄"
+          section_ [class_ "navbar-center"] mempty
+          section_ [class_ "navbar-section"] $ do
+            a_ [href_ "/explore-mundane", class_ "btn btn-link"] "Mundane"
+            a_ [href_ "/explore-natal", class_ "btn btn-link"] "Natal"
+            a_ [href_ "/about", class_ "btn btn-link"] "About"
         page
-    footer
     
-
-
 stylesheets :: Html ()
 stylesheets = do
   link_ [rel_ "stylesheet", href_ "/static/css/spectre.min.css"]
@@ -41,6 +46,3 @@ favicon = do
     link_ [rel_ "manifest", assetRef' "site.webmanifest"]
     where
         assetRef' = href_ . T.pack . mappend "/static/"
-
-footer :: Html ()
-footer = mempty

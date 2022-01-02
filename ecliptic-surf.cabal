@@ -49,7 +49,9 @@ library
       EclipticSurf.Chart
       EclipticSurf.Query
       EclipticSurf.Server.Pages
+      EclipticSurf.Views.Helpers
       EclipticSurf.Views.Home
+      EclipticSurf.Views.SurfCharts
       EclipticSurf.Views.Layout
       EclipticSurf.Effects.Almanac
       EclipticSurf.Effects.Time
@@ -90,7 +92,8 @@ library
       , bytestring
       , colourista
       , envparse
-      --, PyF -- alternative to interpolate 
+      -- alternative to interpolate 
+      , PyF
       --, raven-haskell -- client for sentry.io
       , text
       --, text-display -- user-facing output

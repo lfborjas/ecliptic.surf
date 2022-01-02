@@ -2,10 +2,19 @@
 module EclipticSurf.Environment where
 
 import Data.Word (Word16)
-import GHC.Generics ( Generic )
 import Env
-import Text.Read (readMaybe)
+  ( AsUnread (unread),
+    Error,
+    Parser,
+    Reader,
+    help,
+    parse,
+    str,
+    var,
+  )
+import GHC.Generics (Generic)
 import Graphics.Rendering.Chart.Backend.Diagrams (DEnv)
+import Text.Read (readMaybe)
 
 data DeployEnv
   = Test
