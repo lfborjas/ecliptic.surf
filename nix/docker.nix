@@ -34,8 +34,10 @@ pkgs.dockerTools.buildImage {
   # location... but I'm running out of time so for now just copying to `/home`
   extraCommands = ''
     cp -rf ${config} config
-    cp -rf ${config}/ephe/ home
     cp -rf ${static} static
+    chmod +w home
+    mkdir home/ephe
+    cp -a ${config}/ephe/. home/ephe
     chmod -R 777 config
     mkdir -p usr/share
     ln -sf ${pkgs.tzdata}/share/zoneinfo usr/share/zoneinfo
@@ -47,8 +49,8 @@ pkgs.dockerTools.buildImage {
     Env = [ 
       "DEPLOY_ENV=Production"
       "TIMEZONE_DATABASE_FILE=/config/timezone21.bin"
-      "SE_EPHE_PATH=/config/ephe"
-      "EP4_PATH=/config/ephe"
+      "SE_EPHE_PATH=/config/ephe/"
+      "EP4_PATH=/config/ephe/"
     ];
   };
 }
