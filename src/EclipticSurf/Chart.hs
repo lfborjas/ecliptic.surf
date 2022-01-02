@@ -1,18 +1,36 @@
 {-# LANGUAGE FlexibleContexts #-}
 module EclipticSurf.Chart where
 
-import SwissEphemeris
 import Almanac
-
-import Graphics.Rendering.Chart.Easy hiding (render)
-import Graphics.Rendering.Chart.Backend.Diagrams hiding (SVG)
-import Control.Monad
-import Data.Time
-import Data.Foldable
-import Diagrams.Backend.SVG (Options(SVGOptions), SVG(..), B )
-import Diagrams hiding (render, aspect, Renderable)
+    ( Transit(Transit, transitProgress, aspect, transiting,
+              transited) )
+import Control.Monad ( forM_ )
+import Data.Foldable ( Foldable(toList) )
+import Data.Time ( Day )
+import Diagrams ( Diagram, renderDia, mkWidth )
+import Diagrams.Backend.SVG (B, Options (SVGOptions), SVG (..))
+import Graphics.Rendering.Chart.Backend.Diagrams
+    ( DEnv, runBackendR )
+import Graphics.Rendering.Chart.Easy
+    ( Renderable,
+      ToRenderable(toRenderable),
+      EC,
+      execEC,
+      PlotFillBetween,
+      solidFillStyle,
+      laxis_reverse,
+      layout_y_axis,
+      plot_fillbetween_style,
+      plot_fillbetween_title,
+      plot_fillbetween_values,
+      liftEC,
+      plot,
+      takeColor,
+      dissolve,
+      (.=) )
 import qualified Graphics.Svg as Svg
-import Lucid (toHtmlRaw, Html)
+import Lucid (Html, toHtmlRaw)
+import SwissEphemeris ( Planet, dayFromJulianDay )
 
 render :: [Svg.Attribute] -> Double -> DEnv Double -> Renderable a -> Html ()
 render attrs width' ev dia = 

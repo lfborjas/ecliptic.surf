@@ -1,15 +1,12 @@
 module EclipticSurf.Views.Home where
 
--- TODO: check out:
--- https://github.com/flora-pm/flora-server/blob/development/src/FloraWeb/Templates/Types.hs
-
-import Lucid
-import Data.Time
-import SwissEphemeris (Planet)
-import Almanac
-import Control.Monad
+import Almanac (Transit (Transit, aspect, transited, transiting))
+import Control.Monad (forM_)
 import Data.List (intersperse)
+import Data.Time (UTCTime)
 import Data.Time.Format.ISO8601
+import Lucid
+import SwissEphemeris (Planet)
 
 page :: [(Transit Planet, UTCTime, [UTCTime])] -> Html () -> Html ()
 page transits  chart = 

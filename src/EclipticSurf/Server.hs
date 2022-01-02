@@ -4,27 +4,42 @@
 {-# LANGUAGE FlexibleContexts #-}
 module EclipticSurf.Server where
 
-import EclipticSurf.Environment
 import Colourista (successMessage)
-import qualified Data.Text as T
-import Network.Wai.Handler.Warp
-import Data.Function
-import Servant.Server.Generic
-import Network.Wai.Logger
-import Servant
-import Servant.API.Generic
-import EclipticSurf.Types
 import Control.Carrier.Error.Either (runError)
 import Control.Carrier.Lift (runM)
+import Control.Carrier.Reader (runReader)
+import Data.Function ((&))
+import qualified Data.Text as T
+import EclipticSurf.Effects.Almanac (runAlmanacDataIO)
+import EclipticSurf.Effects.Time (runTimeIO)
+import EclipticSurf.Environment
+  ( Config (deployEnv, ephePath, httpPort, precalcPath),
+    Env (..),
+    getServerEnv,
+  )
 import qualified EclipticSurf.Server.Pages as Pages
+import EclipticSurf.Types (AppM)
 import Graphics.Rendering.Chart.Backend (vectorAlignmentFns)
 import Graphics.Rendering.Chart.Backend.Diagrams (defaultEnv)
-import Control.Carrier.Reader (runReader)
-import EclipticSurf.Effects.Time (runTimeIO)
-import EclipticSurf.Effects.Almanac (runAlmanacDataIO)
-import System.Directory (makeAbsolute)
+import Network.Wai.Handler.Warp
+  ( defaultSettings,
+    runSettings,
+    setLogger,
+    setPort,
+  )
+import Network.Wai.Logger (withStdoutLogger)
+import Servant
+  ( Raw,
+    ServerError,
+    serveDirectoryWebApp,
+    throwError,
+    type (:>),
+  )
+import Servant.API.Generic (Generic, GenericMode (type (:-)))
+import Servant.Server.Generic (AsServerT, genericServeT)
+import SwissEphemeris (setEphemeridesPath)
 import SwissEphemeris.Precalculated (setEphe4Path)
-import SwissEphemeris
+import System.Directory (makeAbsolute)
 
 
 data Routes route = Routes

@@ -3,16 +3,22 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module EclipticSurf.Types where
 
-import EclipticSurf.Import
-import Servant (ServerError, FromHttpApiData)
-import EclipticSurf.Environment (Env)
-import Data.Time
-import SwissEphemeris (Planet(..))
-import Servant.API (FromHttpApiData(parseUrlPiece))
-import Almanac (AspectName(..))
-import Text.Read (readMaybe)
+import Almanac (AspectName (..))
 import Data.Text (pack)
-import Data.Time.Format.ISO8601 (iso8601ParseM, ISO8601)
+import Data.Time (TimeZone)
+import Data.Time.Format.ISO8601 (ISO8601, iso8601ParseM)
+import EclipticSurf.Environment (Env)
+import EclipticSurf.Import
+  ( AlmanacData,
+    Has,
+    Reader,
+    Throw,
+    Time,
+  )
+import Servant (FromHttpApiData, ServerError)
+import Servant.API (FromHttpApiData (parseUrlPiece))
+import SwissEphemeris (Planet (..))
+import Text.Read (readMaybe)
 
 type AppM sig m =
   ( 

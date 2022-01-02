@@ -1,15 +1,15 @@
 module EclipticSurf.Views.SurfCharts where
 
-import Lucid
-import Control.Monad (when, forM_, unless)
-import Data.Maybe (isJust, fromJust)
-import Almanac.Extras
-import SwissEphemeris (Planet)
-import Data.Text (Text, toTitle)
-import Data.Time
 import Almanac
+import Almanac.Extras ( defaultPlanets, majorAspects )
+import Control.Monad (forM_, unless, when)
 import Data.List (intersperse)
+import Data.Maybe (fromJust, isJust)
+import Data.Text (Text, toTitle)
+import Data.Time ( UTCTime )
 import Data.Time.Format.ISO8601 (iso8601Show)
+import Lucid
+import SwissEphemeris (Planet)
 
 mundanePage
   :: UTCTime

@@ -1,29 +1,40 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
-{-# LANGUAGE StandaloneDeriving #-}
 module EclipticSurf.Server.Pages where
 
-import EclipticSurf.Import
-import Servant.API.Generic
-import Lucid
-import Servant.HTML.Lucid
-import Servant
-import Servant.Server.Generic
-import EclipticSurf.Types
-import EclipticSurf.Environment
-import EclipticSurf.Query (currentTransits, mundaneTransits, sansMoon, natalTransits, currentNatalTransits)
-import Control.Lens
-import Data.Time
-import SwissEphemeris (Planet(..))
-import Data.Text hiding (map, null)
-import Data.Maybe (catMaybes)
-import Data.Either (fromRight)
-import Almanac (AspectName(..), Aspect (aspectName))
+import Almanac (Aspect (aspectName), AspectName (..))
 import Almanac.Extras (majorAspects)
-import qualified EclipticSurf.Views.Home as Home
-import qualified EclipticSurf.Views as Views
+import Control.Lens
+import Data.Either (fromRight)
+import Data.Maybe (catMaybes)
+import Data.Text ( Text, intercalate )
+import Data.Time
+    ( ZonedTime(ZonedTime),
+      localTimeToUTC,
+      utcToLocalTime,
+      utc,
+      zonedTimeToUTC,
+      LocalTime )
 import qualified EclipticSurf.Chart as Chart
+import EclipticSurf.Environment
+import EclipticSurf.Import ( now, ask )
+import EclipticSurf.Query (currentNatalTransits, currentTransits, mundaneTransits, natalTransits, sansMoon)
+import EclipticSurf.Types ( AppM, TimeZoneOffset(..) )
+import qualified EclipticSurf.Views as Views
+import qualified EclipticSurf.Views.Home as Home
 import qualified EclipticSurf.Views.SurfCharts as SurfCharts
+import Lucid ( Html )
+import Servant
+    ( Lenient,
+      Required,
+      QueryFlag,
+      QueryParam',
+      QueryParams,
+      type (:>),
+      Get )
+import Servant.API.Generic
+    ( Generic, GenericMode(type (:-)), ToServant, ToServantApi )
+import Servant.HTML.Lucid ( HTML )
+import Servant.Server.Generic ( genericServerT, AsServerT )
+import SwissEphemeris (Planet (..))
 
 
 type Routes = ToServantApi Routes'

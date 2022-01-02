@@ -11,10 +11,10 @@
 
 module EclipticSurf.Effects.Time where
 
-import Control.Algebra
+import Control.Algebra ( Algebra(..), type (:+:)(..), Has, send )
+import Control.Monad.IO.Class ( MonadIO(..) )
+import Data.Kind ( Type )
 import Data.Time (UTCTime, getCurrentTime)
-import Data.Kind
-import Control.Monad.IO.Class
 
 data Time (m :: Type -> Type) k where
   Now :: Time m UTCTime

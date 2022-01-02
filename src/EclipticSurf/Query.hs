@@ -2,16 +2,53 @@
 
 module EclipticSurf.Query where
 
-import Data.Time
-import Control.Lens
 import Almanac
-import Almanac.Optics
+  ( Aspect (aspectName, orbApplying, orbSeparating),
+    AspectName,
+    ExactEvent,
+    Interval (Interval),
+    MundaneQuery (QueryPlanetaryMundaneTransit),
+    NatalQuery (QueryLunarNatalTransit, QueryPlanetaryNatalTransit),
+    ReferenceEvent (ReferenceEvent),
+    Transit (Transit, transitEnds, transitStarts),
+    TransitOptions (TransitOptions),
+    easyTransitOptions,
+    mundane,
+    natal,
+  )
 import Almanac.Extras
+  ( defaultMundaneTransitPairs,
+    defaultPlanets,
+    filteredPairs,
+    majorAspects,
+    uniquePairs,
+  )
+import Almanac.Optics
+  ( eventL,
+    exactitudeMomentsL,
+    _PlanetaryTransitInfo,
+  )
+import Control.Lens
+  ( Field1 (_1),
+    traversed,
+    view,
+    (&),
+    (^..),
+    (^?),
+    _Just,
+    _head,
+  )
 import Data.List.NonEmpty (fromList)
-import SwissEphemeris (Planet (Sun), JulianDayTT, GeographicPosition (GeographicPosition))
-import EclipticSurf.Types (AppM)
-import EclipticSurf.Import
 import Data.Sequence (Seq)
+import Data.Time
+  ( UTCTime (UTCTime),
+    addGregorianMonthsClip,
+    fromGregorian,
+    toGregorian,
+  )
+import EclipticSurf.Import (now, runExactQuery, toJulianTT)
+import EclipticSurf.Types (AppM)
+import SwissEphemeris (GeographicPosition (GeographicPosition), JulianDayTT, Planet (Sun))
 
 mundaneTransits
   :: AppM sig m 
