@@ -12,6 +12,7 @@ import Servant.API (FromHttpApiData(parseUrlPiece))
 import Almanac (AspectName(..))
 import Text.Read (readMaybe)
 import Data.Text (pack)
+import Data.Time.Format.ISO8601 (iso8601ParseM, ISO8601)
 
 type AppM sig m =
   ( 
@@ -21,13 +22,23 @@ type AppM sig m =
     Has AlmanacData sig m
   )
 
+-- | Newtype over TimeZone, to responsibly derive FromHttpApiData
 newtype TimeZoneOffset 
-  = TimeZoneOffset {getTimeZoneOffset ::  Int}
+  = TimeZoneOffset {getTimeZoneOffset :: TimeZone}
   deriving stock (Eq, Read, Show)
-  deriving FromHttpApiData via Int
+  deriving ISO8601 via TimeZone
   
-offsetToTimeZone :: TimeZoneOffset -> TimeZone
-offsetToTimeZone = hoursToTimeZone . getTimeZoneOffset
+instance FromHttpApiData TimeZoneOffset where
+  parseUrlPiece t = do
+    s <- parseUrlPiece t
+    let tz = iso8601ParseM s
+    case tz of
+      Nothing -> Left . pack $ "Invalid timezone string " <> s
+      Just parsed -> Right parsed
+
+
+-- NOTE(luis) the orphans below only exist because these types are
+-- from my own packages! Though maybe they should also be newtypes?
 
 deriving stock instance Read Planet
 

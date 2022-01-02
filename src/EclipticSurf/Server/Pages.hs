@@ -13,7 +13,6 @@ import EclipticSurf.Types
 import EclipticSurf.Environment
 import EclipticSurf.Query (currentTransits, mundaneTransits, sansMoon)
 import Control.Lens
-import qualified EclipticSurf.Views.Mundane as Mundane
 import Data.Time
 import SwissEphemeris (Planet(..))
 import Data.Text hiding (map, null)
@@ -24,6 +23,7 @@ import Almanac.Extras (majorAspects)
 import qualified EclipticSurf.Views.Home as Home
 import qualified EclipticSurf.Views as Views
 import qualified EclipticSurf.Chart as Chart
+import qualified EclipticSurf.Views.SurfCharts as SurfCharts
 
 
 type Routes = ToServantApi Routes'
@@ -72,7 +72,7 @@ homeHandler = do
 
 mundaneForm :: AppM sig m => m (Html ())
 mundaneForm = do
-  renderView $ Mundane.form Nothing
+  renderView $ SurfCharts.mundaneForm Nothing
 
 mundaneHandler
   :: AppM sig m
@@ -88,25 +88,32 @@ mundaneHandler start end transiting transited chosenAspects= do
                   either (const $ Just "Invalid end date") (const Nothing) end
                 ]
   if not . null $ errors then
-    renderView . Mundane.form . Just $ intercalate ", " errors
+    renderView . SurfCharts.mundaneForm . Just $ intercalate ", " errors
   else do
     Env{chartEnv} <- ask
     today' <- now
     let today = utcToLocalTime utc today'
         startUT = localTimeToUTC utc (fromRight today start)
         endUT   = localTimeToUTC utc (fromRight today end)
-        transiting' = if null transiting then sansMoon else transiting
-        transited'  = if null transited then sansMoon else transited
-        chosenAspects' = if null chosenAspects then map aspectName majorAspects else chosenAspects
+        transiting' = defaultColl sansMoon transiting
+        transited'  = defaultColl sansMoon transited
+        chosenAspects' = defaultColl (map aspectName majorAspects) chosenAspects
     transits <- mundaneTransits startUT endUT transiting' transited' chosenAspects'
     let chart = Chart.surfChart $ transits ^.. traversed . _1
         rendered = Chart.renderEZ chartEnv chart
-    renderView $ Mundane.page startUT endUT transiting' transited' chosenAspects' transits rendered
+    renderView $ SurfCharts.mundanePage startUT endUT transiting' transited' chosenAspects' transits rendered
 
 natalForm :: AppM sig m => m (Html ())
-natalForm = undefined
+natalForm = renderView $ SurfCharts.natalForm Nothing
 
 natalHandler = undefined
+
+-------------------------------------------------------------------------------
+-- HELPERS
+-------------------------------------------------------------------------------
+
+defaultColl :: [a] -> [a] -> [a]
+defaultColl def val = if null val then def else val
 
 renderView :: AppM sig m => Html () -> m (Html ())
 renderView = pure . Views.render
