@@ -26,17 +26,41 @@ mundanePage start end _transitingC _transitedC _chosenAspects transits chart = d
       " and "
       toHtml . iso8601Show $ end
     chart
-    ul_ $ do
-      forM_ transits $ \(Transit{transiting, transited, aspect}, exacts) -> do
-        unless (null exacts) $ do
-          li_  $ do
-            toHtml . mconcat . intersperse " " $ [
-                show transiting,
-                show aspect,
-                show transited,
-                "exact at:",
-                mconcat . intersperse "," $ map iso8601Show exacts
-              ]
+    displayTransits transits
+    
+natalPage
+  :: UTCTime 
+  -> UTCTime
+  -> UTCTime
+  -> [Planet]
+  -> [Planet]
+  -> [AspectName]
+  -> [(Transit Planet, [UTCTime])]-> Html () -> Html ()
+natalPage dob start end _transitingC _transitedC _chosenAspects transits chart = do
+  main_ $ do
+    p_ [class_  "mt-2"] $ do
+      "Mundane transits between "
+      toHtml . iso8601Show $ start
+      " and "
+      toHtml . iso8601Show $ end
+      " for birth date: "
+      toHtml . iso8601Show $ dob
+    chart
+    displayTransits transits
+ 
+displayTransits :: [(Transit Planet, [UTCTime])] -> Html ()
+displayTransits transits = do
+  ul_ $ do
+    forM_ transits $ \(Transit{transiting, transited, aspect}, exacts) -> do
+      unless (null exacts) $ do
+        li_  $ do
+          toHtml . mconcat . intersperse " " $ [
+              show transiting,
+              show aspect,
+              show transited,
+              "exact at:",
+              mconcat . intersperse "," $ map iso8601Show exacts
+            ]
 
 
 mundaneForm :: Maybe Text -> Html ()

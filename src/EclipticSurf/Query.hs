@@ -8,9 +8,10 @@ import Almanac
 import Almanac.Optics
 import Almanac.Extras
 import Data.List.NonEmpty (fromList)
-import SwissEphemeris (Planet (Sun), JulianDayTT)
+import SwissEphemeris (Planet (Sun), JulianDayTT, GeographicPosition (GeographicPosition))
 import EclipticSurf.Types (AppM)
 import EclipticSurf.Import
+import Data.Sequence (Seq)
 
 mundaneTransits
   :: AppM sig m 
@@ -30,19 +31,43 @@ mundaneTransits start end transiting transited aspects = do
             (Interval start end)
             [QueryPlanetaryMundaneTransit opts]
   exactEvents <- runExactQuery q
-  let active = (trn <$> exactEvents) ^.. traversed . _Just
-      trn evt = 
-        let info = evt ^? eventL._PlanetaryTransitInfo
-            exacts = evt ^? exactitudeMomentsL
-        in (,) <$> info <*> exacts
-  pure active
+  pure $ extractAllTransits exactEvents
      
-summarize :: ExactEvent -> Maybe (Transit Planet, UTCTime, [UTCTime])
-summarize evt =
-   let transit = evt ^? eventL._PlanetaryTransitInfo
-       allExact = evt ^?  exactitudeMomentsL  
-       firstExact = evt ^? exactitudeMomentsL._head
-   in (,,) <$> transit <*> firstExact <*> allExact
+natalTransits
+  :: AppM sig m 
+  => UTCTime
+  -> UTCTime
+  -> UTCTime
+  -> [Planet]
+  -> [Planet]
+  -> [AspectName]
+  -> m [(Transit Planet, [UTCTime])]
+natalTransits dob start end transiting transited aspects = do
+  let opts = 
+        TransitOptions 
+          True 
+          (fromList (relaxedAspects & filter ((`elem` aspects) . aspectName ))) 
+          (fromList $ filteredPairs uniquePairs transiting transited)
+      q = natal 
+            (Interval start end)
+            (ReferenceEvent dob zeroGeo)
+            [QueryPlanetaryNatalTransit opts]
+  exactEvents <- runExactQuery q
+  pure $ extractAllTransits exactEvents
+
+-- | NOTE(luis) bogus geo position because we're not doing any house
+-- calculations; consider making this optional in @almanac@?
+zeroGeo :: GeographicPosition
+zeroGeo = GeographicPosition 0 0
+ 
+extractAllTransits :: Seq ExactEvent -> [(Transit Planet, [UTCTime])]
+extractAllTransits exactEvents =
+  (extract <$> exactEvents) ^.. traversed . _Just
+  where
+    extract evt =
+      let info = evt ^? eventL._PlanetaryTransitInfo
+          exacts = evt ^? exactitudeMomentsL
+      in (,) <$> info <*> exacts
 
 currentTransits :: AppM sig m => m [(Transit Planet, UTCTime, [UTCTime])]
 currentTransits = do
@@ -65,6 +90,14 @@ currentTransits = do
             active
             & filter (happening todayTT . view _1)
       pure activeToday
+
+summarize :: ExactEvent -> Maybe (Transit Planet, UTCTime, [UTCTime])
+summarize evt =
+   let transit = evt ^? eventL._PlanetaryTransitInfo
+       allExact = evt ^?  exactitudeMomentsL  
+       firstExact = evt ^? exactitudeMomentsL._head
+   in (,,) <$> transit <*> firstExact <*> allExact
+
 
 happening :: JulianDayTT -> Transit Planet -> Bool
 happening today Transit{transitStarts, transitEnds} =
