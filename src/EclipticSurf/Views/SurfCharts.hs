@@ -7,8 +7,8 @@ import Data.List (intersperse)
 import Data.Maybe (fromJust, isJust)
 import Data.Text (Text, toTitle)
 import Data.Time ( UTCTime )
-import Data.Time.Format.ISO8601 (iso8601Show)
 import Lucid
+import EclipticSurf.Views.Helpers
 import SwissEphemeris (Planet)
 
 mundanePage
@@ -23,9 +23,9 @@ mundanePage start end _transitingC _transitedC _chosenAspects transits chart = d
     h2_ "Mundane Transits"
     p_ [class_  "mt-2"] $ do
       "Between "
-      toHtml . iso8601Show $ start
+      toHtml . dateTimeShow $ start
       " and "
-      toHtml . iso8601Show $ end
+      toHtml . dateTimeShow $ end
     chart
     displayTransits transits
 
@@ -44,14 +44,15 @@ natalPage dob start end _transitingC _transitedC _chosenAspects transits chart a
     h2_ "Natal Transits"
     p_ [class_  "mt-2"] $ do
       "Between "
-      toHtml . iso8601Show $ start
+      toHtml . dateTimeShow $ start
       " and "
-      toHtml . iso8601Show $ end
+      toHtml . dateTimeShow $ end
       " for birth date: "
-      toHtml . iso8601Show $ dob
+      toHtml . dateTimeShow $ dob
     chart
     displayTransits transits
     unless (null activeTransits) $ do
+      div_ [class_ "divider"] ""
       h2_ "Natal transits active today"
       activeChart
       displayTransits $ map (\(t,_fe,e) -> (t,e)) activeTransits
@@ -67,7 +68,7 @@ displayTransits transits = do
               show aspect,
               show transited,
               "exact at:",
-              mconcat . intersperse "," $ map iso8601Show exacts
+              mconcat . intersperse ", " $ map dateTimeShow exacts
             ]
 
 

@@ -42,6 +42,7 @@ type Param' = QueryParam'  '[Required, Lenient]
 
 data Routes' mode = Routes'
   { home :: mode :- Get '[HTML] (Html ())
+  , about :: mode :- "about" :> Get '[HTML] (Html ())
   , exploreMundane :: mode :- "explore-mundane" :> Get '[HTML] (Html ())
   , exploreNatal:: mode :- "explore-natal" :> Get '[HTML] (Html ())
   , mundane ::
@@ -68,6 +69,7 @@ data Routes' mode = Routes'
 server :: AppM sig m => ToServant Routes' (AsServerT m)
 server = genericServerT Routes'
   { home = homeHandler
+  , about = aboutHandler
   , exploreMundane = mundaneForm
   , mundane = mundaneHandler
   , exploreNatal = natalForm
@@ -81,6 +83,10 @@ homeHandler = do
   let chart = Chart.surfChart (transits ^.. traversed . _1)
       rendered = Chart.renderEZ chartEnv chart
   renderView . Home.page transits $ rendered
+
+aboutHandler :: AppM sig m => m (Html ())
+aboutHandler =
+  renderView Home.about
 
 mundaneForm :: AppM sig m => m (Html ())
 mundaneForm = do
