@@ -15,6 +15,7 @@ import Env
 import GHC.Generics (Generic)
 import Graphics.Rendering.Chart.Backend.Diagrams (DEnv)
 import Text.Read (readMaybe)
+import System.Environment (setEnv)
 
 data DeployEnv
   = Test
@@ -41,6 +42,17 @@ data Env = Env
 getServerEnv :: IO Config
 getServerEnv = do
   parse id parseConfig
+
+-- | Set a few select variables back in the environment.
+-- 
+-- Our env parsing library unsets env variables as it parses them,
+-- which is a big ol' headache for our C library!
+-- see:
+-- https://hackage.haskell.org/package/envparse-0.4.1/docs/src/Env.html#parseOr
+restoreEnv :: Config -> IO ()
+restoreEnv Config{ephePath,precalcPath}= do
+  setEnv "SE_EPHE_PATH" ephePath
+  setEnv "EP4_PATH" precalcPath
 
 -- | Parse 'Config' from environment variables
 parseConfig :: Parser Error Config

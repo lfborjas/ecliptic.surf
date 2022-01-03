@@ -29,15 +29,9 @@ pkgs.dockerTools.buildImage {
   # to the standard location as expected (perhaps erroneously) by timezone-detect:
   # https://github.com/lfborjas/timezone-detect/blob/6c3d7954431b63c07c1b0018a364897e42080e54/src/Data/Time/LocalTime/TimeZone/Detect.hs#L123
   #
-  # NOTE(luis) not sure why this particular application isn't picking up
-  # the environment variables _or_ the explicit setting of the precalc
-  # location... but I'm running out of time so for now just copying to `/home`
   extraCommands = ''
     cp -rf ${config} config
     cp -rf ${static} static
-    mkdir -p home/ephe
-    chmod +w home
-    cp -a ${config}/ephe/. home/ephe
     chmod -R 777 config
     mkdir -p usr/share
     ln -sf ${pkgs.tzdata}/share/zoneinfo usr/share/zoneinfo

@@ -13,9 +13,9 @@ import qualified Data.Text as T
 import EclipticSurf.Effects.Almanac (runAlmanacDataIO)
 import EclipticSurf.Effects.Time (runTimeIO)
 import EclipticSurf.Environment
-  ( Config (deployEnv, ephePath, httpPort, precalcPath),
+  ( Config (deployEnv, httpPort),
     Env (..),
-    getServerEnv, DeployEnv (Development)
+    getServerEnv, DeployEnv (Development), restoreEnv
   )
 import qualified EclipticSurf.Server.Pages as Pages
 import EclipticSurf.Types (AppM)
@@ -37,9 +37,6 @@ import Servant
   )
 import Servant.API.Generic (Generic, GenericMode (type (:-)))
 import Servant.Server.Generic (AsServerT, genericServeT)
-import SwissEphemeris (setEphemeridesPath)
-import SwissEphemeris.Precalculated (setEphe4Path)
-import System.Directory (makeAbsolute)
 import Control.Monad (when)
 
 
@@ -62,13 +59,9 @@ run = do
         " ♊"
       ]
   denv <- defaultEnv vectorAlignmentFns 800 600
-  absoluteEphePath <- makeAbsolute . ephePath $ config
-  absoluteEp4Path  <- makeAbsolute . precalcPath $ config
-  -- NOTE(luis) these shouldn't be necessary... and yet
-  -- they are??
-  setEphemeridesPath absoluteEphePath
-  setEphe4Path absoluteEp4Path
-
+  -- NOTE(luis) restore some env vars after parsing the config,
+  -- since our ephemeris library is still expecting to find them.
+  restoreEnv config
   let environ = Env{chartEnv = denv, serverPort = httpPort config}
   runServer environ
 
