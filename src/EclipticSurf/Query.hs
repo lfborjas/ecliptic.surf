@@ -21,7 +21,7 @@ import Almanac.Extras
     defaultPlanets,
     filteredPairs,
     majorAspects,
-    uniquePairs,
+    uniquePairs, allPairs
   )
 import Almanac.Optics
   ( eventL,
@@ -63,6 +63,7 @@ mundaneTransits start end transiting transited aspects = do
         TransitOptions 
           True 
           (fromList (relaxedAspects & filter ((`elem` aspects) . aspectName ))) 
+          -- TODO(luis) should `uniquePairs` be `allPairs` like in `natalTransits`?
           (fromList $ filteredPairs uniquePairs transiting transited)
       q = mundane
             (Interval start end)
@@ -84,7 +85,7 @@ natalTransits dob start end transiting transited aspects = do
         TransitOptions 
           True 
           (fromList (relaxedAspects & filter ((`elem` aspects) . aspectName ))) 
-          (fromList $ filteredPairs uniquePairs transiting transited)
+          (fromList $ filteredPairs allPairs transiting transited)
       q = natal 
             (Interval start end)
             (ReferenceEvent dob zeroGeo)
